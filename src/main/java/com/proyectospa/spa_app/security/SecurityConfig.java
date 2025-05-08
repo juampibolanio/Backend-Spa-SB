@@ -44,7 +44,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://sentirsebiensp.netlify.app") // o el puerto donde corre Vite
+                        .allowedOrigins("http://localhost:5173") // o el puerto donde corre Vite
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true);
