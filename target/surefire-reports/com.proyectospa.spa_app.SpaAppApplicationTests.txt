@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.proyectospa.spa_app.SpaAppApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.14 s -- in com.proyectospa.spa_app.SpaAppApplicationTests
