@@ -5,10 +5,12 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class ClienteRequestDTO {
+public class UsuarioDTO {
+    private Integer id;
     private String nombre;
+    private String apellido;
     private String dni;
-    private String direccion;
-    private String telefono;
+    private String email;
+    private String rol;
+    private boolean activo;
 }
-

@@ -1,21 +1,27 @@
 package com.proyectospa.spa_app.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.proyectospa.spa_app.model.Servicio;
 import com.proyectospa.spa_app.repository.ServicioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ServicioService {
 
-    private final ServicioRepository servicioRepository;
+    @Autowired
+    private ServicioRepository servicioRepo;
 
-    public List<Servicio> obtenerTodosLosServicios() {
-        return servicioRepository.findAll();
+    public Servicio crearServicio(Servicio servicio) {
+        return servicioRepo.save(servicio);
+    }
+
+    public List<Servicio> listarTodos() {
+        return servicioRepo.findAll();
+    }
+
+    public List<Servicio> listarPorProfesional(Integer profesionalId) {
+        return servicioRepo.findByProfesionalId(profesionalId);
     }
 }

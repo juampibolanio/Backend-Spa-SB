@@ -5,17 +5,20 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Servicio {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nombre;
-    private String descripcion;
-    private double precio;
+    private String apellido;
+    private String dni;
+    private String email;
+    private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "profesional_id")
-    private Usuario profesional;
+    @Enumerated(EnumType.STRING)
+    private Rol rol;
+
+    private boolean activo;
 }

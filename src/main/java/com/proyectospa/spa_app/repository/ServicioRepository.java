@@ -1,10 +1,10 @@
 package com.proyectospa.spa_app.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.proyectospa.spa_app.model.Servicio;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
+import java.util.List;
+
 public interface ServicioRepository extends JpaRepository<Servicio, Integer> {
+    List<Servicio> findByProfesionalId(Integer profesionalId);
 }

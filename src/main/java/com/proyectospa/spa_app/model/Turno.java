@@ -1,34 +1,36 @@
 package com.proyectospa.spa_app.model;
 
-import java.time.LocalDateTime;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 public class Turno {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private LocalDateTime fecha;
-    private LocalDateTime horaInicio;
-    private LocalDateTime horaFin;
-
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
+    private Usuario cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "profesional_id")
+    private Usuario profesional;
 
     @ManyToOne
     @JoinColumn(name = "servicio_id")
     private Servicio servicio;
+
+    private LocalDate fecha;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+
+    private boolean pagado;
+    private boolean pagoWeb;
+    private double monto;
 }
