@@ -61,6 +61,7 @@ public class TurnoController {
             return ResponseEntity.badRequest().body("Formato de fecha inválido. Use yyyy-MM-dd");
         }
     }
+
     @GetMapping("/profesional/{id}/maniana")
     public ResponseEntity<List<TurnoDTO>> listarTurnosManiana(@PathVariable Integer id) {
         LocalDate maniana = LocalDate.now().plusDays(1);
@@ -72,6 +73,27 @@ public class TurnoController {
     public ResponseEntity<List<TurnoDTO>> listarTurnosPorProfesional(@PathVariable Integer id) {
         List<Turno> turnos = turnoService.listarPorProfesional(id);
         return ResponseEntity.ok(turnoService.toDTOList(turnos));
+    }
+
+    @GetMapping("/{id}/comprobante")
+    public ResponseEntity<String> obtenerComprobante(@PathVariable Integer id) {
+        Turno turno = turnoService.buscarPorId(id);
+        if (turno == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String html = turnoService.generarContenidoHtml(turno);
+        return ResponseEntity.ok().body(html);
+    }
+
+    @PostMapping("/pago-agrupado")
+    public ResponseEntity<?> pagarTurnosAgrupados(@RequestBody List<Integer> turnoIds) {
+        try {
+            List<Turno> turnosPagados = turnoService.procesarPagoAgrupado(turnoIds);
+            List<TurnoDTO> dtos = turnoService.toDTOList(turnosPagados);
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
