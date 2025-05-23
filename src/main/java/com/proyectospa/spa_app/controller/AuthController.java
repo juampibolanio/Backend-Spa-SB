@@ -34,10 +34,13 @@ public class AuthController {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtUtil.generateJwtToken(
-                request.getEmail(),
-                authentication.getAuthorities().iterator().next().getAuthority()
-            );
+
+            String role = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                    .orElse("UNKNOWN");
+
+            String jwt = jwtUtil.generateJwtToken(request.getEmail(), role);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (BadCredentialsException e) {
@@ -55,7 +58,6 @@ public class AuthController {
         return ResponseEntity.ok(nuevoUsuario);
     }
 
-    // Clase interna para enviar el JWT como respuesta
     @Data
     private static class JwtResponse {
         private final String token;

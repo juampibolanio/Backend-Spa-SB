@@ -13,7 +13,7 @@ import org.springframework.security.web.*;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     @Autowired
@@ -29,6 +29,8 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/usuarios/registrar").hasRole("DRA_FELICIDAD")
+                .requestMatchers("/api/turnos/profesional/**").hasRole("PROFESIONAL") // 🔐 Protegido con rol
                 .anyRequest().authenticated()
             );
 

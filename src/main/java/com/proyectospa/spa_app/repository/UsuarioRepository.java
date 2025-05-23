@@ -9,5 +9,7 @@ import java.util.List;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByEmail(String email);
     List<Usuario> findByRol(com.proyectospa.spa_app.model.Rol rol);
+    boolean existsByEmail(String email);
+
 
 }

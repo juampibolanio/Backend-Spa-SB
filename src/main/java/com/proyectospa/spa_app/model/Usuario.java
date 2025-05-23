@@ -15,10 +15,12 @@ public class Usuario {
     private String apellido;
     private String dni;
     private String email;
-    private String password;
 
+    private String password;
+    private String telefono;
+    
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
-    private boolean activo;
+    private boolean activo = true;
 }

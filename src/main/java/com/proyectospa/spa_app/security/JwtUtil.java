@@ -11,12 +11,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Clave secreta segura para HS512 (64 bytes base64)
     private final String jwtSecretBase64 = "q3JkZWxsaWNhbnRlLXZlcnRlLWxhLXNlY3JldGEtMTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6";
 
     private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
 
-    private final long jwtExpirationMs = 86400000; // 24 horas en milisegundos
+    private final long jwtExpirationMs = 86400000; // 24h
 
     public String generateJwtToken(String username, String role) {
         return Jwts.builder()
@@ -49,12 +48,12 @@ public class JwtUtil {
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(authToken);
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Aquí podrías loguear el error si querés
+            // Aquí podés loguear si querés
         }
         return false;
     }

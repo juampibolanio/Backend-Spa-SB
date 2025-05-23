@@ -26,6 +26,12 @@ public class Turno {
     @JoinColumn(name = "servicio_id")
     private Servicio servicio;
 
+    @Enumerated(EnumType.STRING)
+    private EstadoTurno estado;
+
+    @Enumerated(EnumType.STRING)
+    private MetodoPago metodoPago;
+
     private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;
@@ -33,4 +39,5 @@ public class Turno {
     private boolean pagado;
     private boolean pagoWeb;
     private double monto;
+
 }

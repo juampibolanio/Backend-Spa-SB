@@ -1,7 +1,9 @@
 package com.proyectospa.spa_app.controller;
 
-import com.proyectospa.spa_app.model.Servicio;
+import com.proyectospa.spa_app.dto.ServicioDTO;
+import com.proyectospa.spa_app.model.Usuario;
 import com.proyectospa.spa_app.service.ServicioService;
+import com.proyectospa.spa_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,21 +17,32 @@ public class ServicioController {
     @Autowired
     private ServicioService servicioService;
 
+    @Autowired
+    private UsuarioService usuarioService; // Para buscar profesional
+
     @PostMapping("/crear")
-    public ResponseEntity<Servicio> crearServicio(@RequestBody Servicio servicio) {
-        Servicio nuevoServicio = servicioService.crearServicio(servicio);
-        return ResponseEntity.ok(nuevoServicio);
+    public ResponseEntity<?> crearServicio(@RequestBody ServicioDTO dto) {
+        try {
+            var profesionalOpt = usuarioService.buscarPorId(dto.getProfesionalId());
+            if (profesionalOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Profesional no encontrado");
+            }
+            Usuario profesional = profesionalOpt.get();
+            var servicio = servicioService.toEntity(dto, profesional);
+            ServicioDTO creado = servicioService.toDTO(servicioService.crearServicio(servicio));
+            return ResponseEntity.ok(creado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/todos")
-    public ResponseEntity<List<Servicio>> listarTodos() {
-        List<Servicio> servicios = servicioService.listarTodos();
-        return ResponseEntity.ok(servicios);
+    public ResponseEntity<List<ServicioDTO>> listarTodos() {
+        return ResponseEntity.ok(servicioService.toDTOList(servicioService.listarTodos()));
     }
 
     @GetMapping("/profesional/{id}")
-    public ResponseEntity<List<Servicio>> listarPorProfesional(@PathVariable Integer id) {
-        List<Servicio> servicios = servicioService.listarPorProfesional(id);
-        return ResponseEntity.ok(servicios);
+    public ResponseEntity<List<ServicioDTO>> listarPorProfesional(@PathVariable Integer id) {
+        return ResponseEntity.ok(servicioService.toDTOList(servicioService.listarPorProfesional(id)));
     }
 }

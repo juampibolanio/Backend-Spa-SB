@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
-    private Usuario usuario;
+    private final Usuario usuario;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
