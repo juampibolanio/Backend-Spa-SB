@@ -1,5 +1,6 @@
 package com.proyectospa.spa_app.controller;
 
+import com.proyectospa.spa_app.dto.UsuarioDTO;
 import com.proyectospa.spa_app.model.Usuario;
 import com.proyectospa.spa_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,23 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> listarTodos() {
         List<Usuario> usuarios = usuarioService.listarTodos();
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorEmail(@PathVariable String email) {
+        UsuarioDTO usuario = usuarioService.obtenerUsuarioPorEmail(email);
+        return ResponseEntity.ok(usuario);
+    }
+
+    @GetMapping("/profesionales")
+    public ResponseEntity<List<UsuarioDTO>> listarProfesionales() {
+        List<UsuarioDTO> profesionales = usuarioService.listarProfesionales();
+        return ResponseEntity.ok(profesionales);
+    }
+
+    @GetMapping("/clientes")
+    public ResponseEntity<List<UsuarioDTO>> listarClientes() {
+        List<UsuarioDTO> clientes = usuarioService.listarClientes();
+        return ResponseEntity.ok(clientes);
     }
 }

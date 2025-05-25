@@ -1,12 +1,15 @@
 package com.proyectospa.spa_app.service;
 
 import com.proyectospa.spa_app.dto.TurnoDTO;
+import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
 import com.proyectospa.spa_app.model.EstadoTurno;
 import com.proyectospa.spa_app.model.MetodoPago;
 import com.proyectospa.spa_app.model.Servicio;
 import com.proyectospa.spa_app.model.Turno;
 import com.proyectospa.spa_app.model.Usuario;
 import com.proyectospa.spa_app.repository.TurnoRepository;
+import com.proyectospa.spa_app.repository.UsuarioRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class TurnoService {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private TurnoRepository turnoRepo;
@@ -71,6 +77,23 @@ public class TurnoService {
 
     public List<Turno> listarPorProfesionalYEstado(Integer profesionalId, EstadoTurno estado) {
         return turnoRepo.findByProfesionalIdAndEstado(profesionalId, estado);
+    }
+
+    public List<TurnoProfesionalDTO> obtenerTurnosPorProfesional(Integer profesionalId) {
+        List<Turno> turnos = turnoRepo.findByProfesionalId(profesionalId);
+        return turnos.stream().map(turno -> new TurnoProfesionalDTO(
+                turno.getId(),
+                turno.getCliente().getNombre(),
+                turno.getCliente().getApellido(),
+                turno.getServicio().getNombre(),
+                turno.getFecha().toString(),
+                turno.getHoraInicio().toString(),
+                turno.getHoraFin().toString(),
+                turno.getEstado().name(),
+                turno.isPagado(),
+                turno.isPagoWeb(),
+                turno.getMetodoPago() != null ? turno.getMetodoPago().name() : null,
+                turno.getMonto())).toList();
     }
 
     public Turno cambiarEstado(Integer turnoId, EstadoTurno nuevoEstado) {
@@ -238,6 +261,43 @@ public class TurnoService {
         reporte.put("detalle", toDTOList(turnos)); // ✅ esto funciona dentro del TurnoService
 
         return reporte;
+    }
+
+    public TurnoProfesionalDTO mapToTurnoProfesionalDTO(Turno turno) {
+        return new TurnoProfesionalDTO(
+                turno.getId(),
+                turno.getCliente().getNombre(),
+                turno.getCliente().getApellido(),
+                turno.getServicio().getNombre(),
+                turno.getFecha().toString(),
+                turno.getHoraInicio().toString(),
+                turno.getHoraFin().toString(),
+                turno.getEstado().name(),
+                turno.isPagado(),
+                turno.isPagoWeb(),
+                turno.getMetodoPago().name(),
+                turno.getMonto());
+    }
+
+    public List<TurnoProfesionalDTO> obtenerTurnosPorEmail(String email) {
+        Usuario profesional = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+
+        List<Turno> turnos = turnoRepo.findByProfesionalId(profesional.getId());
+
+        return turnos.stream().map(turno -> new TurnoProfesionalDTO(
+                turno.getId(),
+                turno.getCliente().getNombre(),
+                turno.getCliente().getApellido(),
+                turno.getServicio().getNombre(),
+                turno.getFecha().toString(),
+                turno.getHoraInicio().toString(),
+                turno.getHoraFin().toString(),
+                turno.getEstado().name(),
+                turno.isPagado(),
+                turno.isPagoWeb(),
+                turno.getMetodoPago() != null ? turno.getMetodoPago().name() : null,
+                turno.getMonto())).toList();
     }
 
 }

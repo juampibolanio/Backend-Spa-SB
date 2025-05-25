@@ -1,23 +1,30 @@
 package com.proyectospa.spa_app.controller;
 
 import com.proyectospa.spa_app.dto.TurnoDTO;
+import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
 import com.proyectospa.spa_app.model.Servicio;
 import com.proyectospa.spa_app.model.Turno;
 import com.proyectospa.spa_app.model.Usuario;
+import com.proyectospa.spa_app.repository.TurnoRepository;
 import com.proyectospa.spa_app.service.ServicioService;
 import com.proyectospa.spa_app.service.TurnoService;
 import com.proyectospa.spa_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/turnos")
 public class TurnoController {
+
+    @Autowired
+    private TurnoRepository turnoRepository;
 
     @Autowired
     private TurnoService turnoService;
@@ -62,17 +69,33 @@ public class TurnoController {
         }
     }
 
-    @GetMapping("/profesional/{id}/maniana")
-    public ResponseEntity<List<TurnoDTO>> listarTurnosManiana(@PathVariable Integer id) {
-        LocalDate maniana = LocalDate.now().plusDays(1);
-        List<Turno> turnos = turnoService.listarPorProfesionalYFecha(id, maniana);
-        return ResponseEntity.ok(turnoService.toDTOList(turnos));
+    @GetMapping("/profesional")
+    public ResponseEntity<List<TurnoProfesionalDTO>> obtenerTurnosDelProfesional(Authentication authentication) {
+        String email = authentication.getName(); // el email viene del token
+        List<TurnoProfesionalDTO> turnos = turnoService.obtenerTurnosPorEmail(email);
+        return ResponseEntity.ok(turnos);
     }
 
     @GetMapping("/profesional/{id}")
-    public ResponseEntity<List<TurnoDTO>> listarTurnosPorProfesional(@PathVariable Integer id) {
+    public ResponseEntity<List<TurnoProfesionalDTO>> listarTurnosPorProfesional(@PathVariable Integer id) {
         List<Turno> turnos = turnoService.listarPorProfesional(id);
-        return ResponseEntity.ok(turnoService.toDTOList(turnos));
+        List<TurnoProfesionalDTO> resultado = turnos.stream().map(turno -> {
+            return new TurnoProfesionalDTO(
+                    turno.getId(),
+                    turno.getCliente().getNombre(),
+                    turno.getCliente().getApellido(),
+                    turno.getServicio().getNombre(),
+                    turno.getFecha().toString(),
+                    turno.getHoraInicio().toString(),
+                    turno.getHoraFin().toString(),
+                    turno.getEstado().toString(),
+                    turno.isPagado(),
+                    turno.isPagoWeb(),
+                    turno.getMetodoPago().toString(),
+                    turno.getMonto());
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/{id}/comprobante")

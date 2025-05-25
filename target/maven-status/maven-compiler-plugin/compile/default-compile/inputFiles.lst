@@ -1,4 +1,5 @@
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\controller\AuthController.java
+C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\controller\ReporteController.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\controller\ServicioController.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\controller\TurnoController.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\controller\UsuarioController.java
@@ -6,6 +7,7 @@ C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\Login
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\RegistroUsuarioDTO.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\ServicioDTO.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\TurnoDTO.java
+C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\TurnoProfesionalDTO.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\dto\UsuarioDTO.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\model\EstadoTurno.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\model\MetodoPago.java
@@ -20,8 +22,11 @@ C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\JwtUtil.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\UserDetailsImpl.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\UserDetailsServiceImpl.java
+C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\WebConfig.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\security\WebSecurityConfig.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\AuthService.java
+C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\EmailService.java
+C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\ReporteService.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\ServicioService.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\TurnoService.java
 C:\Users\Usuario\Desktop\spa-app\src\main\java\com\proyectospa\spa_app\service\UsuarioService.java

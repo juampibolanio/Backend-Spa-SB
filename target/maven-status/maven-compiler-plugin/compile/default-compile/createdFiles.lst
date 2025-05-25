@@ -1,12 +1,15 @@
 com\proyectospa\spa_app\security\UserDetailsServiceImpl.class
+com\proyectospa\spa_app\service\EmailService.class
 com\proyectospa\spa_app\model\Rol.class
 com\proyectospa\spa_app\security\JwtUtil.class
+com\proyectospa\spa_app\dto\TurnoProfesionalDTO.class
 GenerarPassword.class
 com\proyectospa\spa_app\SpaAppApplication.class
 com\proyectospa\spa_app\repository\UsuarioRepository.class
 com\proyectospa\spa_app\controller\AuthController.class
 com\proyectospa\spa_app\model\EstadoTurno.class
 com\proyectospa\spa_app\model\MetodoPago.class
+com\proyectospa\spa_app\security\WebConfig.class
 com\proyectospa\spa_app\repository\TurnoRepository.class
 com\proyectospa\spa_app\service\UsuarioService.class
 com\proyectospa\spa_app\dto\TurnoDTO.class
@@ -19,6 +22,8 @@ com\proyectospa\spa_app\dto\ServicioDTO.class
 com\proyectospa\spa_app\service\AuthService.class
 com\proyectospa\spa_app\dto\RegistroUsuarioDTO.class
 com\proyectospa\spa_app\controller\TurnoController.class
+com\proyectospa\spa_app\security\WebConfig$1.class
+com\proyectospa\spa_app\controller\ReporteController.class
 com\proyectospa\spa_app\service\ServicioService.class
 com\proyectospa\spa_app\controller\AuthController$JwtResponse.class
 com\proyectospa\spa_app\model\Servicio.class
@@ -28,3 +33,4 @@ com\proyectospa\spa_app\dto\UsuarioDTO.class
 com\proyectospa\spa_app\model\Usuario.class
 com\proyectospa\spa_app\repository\ServicioRepository.class
 com\proyectospa\spa_app\dto\LoginDTO.class
+com\proyectospa\spa_app\service\ReporteService.class
