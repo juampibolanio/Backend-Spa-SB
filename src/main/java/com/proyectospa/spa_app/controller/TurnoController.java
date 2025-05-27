@@ -80,6 +80,9 @@ public class TurnoController {
     public ResponseEntity<List<TurnoProfesionalDTO>> listarTurnosPorProfesional(@PathVariable Integer id) {
         List<Turno> turnos = turnoService.listarPorProfesional(id);
         List<TurnoProfesionalDTO> resultado = turnos.stream().map(turno -> {
+            String estado = (turno.getEstado() != null) ? turno.getEstado().toString() : "SIN_ESTADO";
+            String metodoPago = (turno.getMetodoPago() != null) ? turno.getMetodoPago().toString() : "NO_ESPECIFICADO";
+
             return new TurnoProfesionalDTO(
                     turno.getId(),
                     turno.getCliente().getNombre(),
@@ -88,10 +91,10 @@ public class TurnoController {
                     turno.getFecha().toString(),
                     turno.getHoraInicio().toString(),
                     turno.getHoraFin().toString(),
-                    turno.getEstado().toString(),
+                    estado,
                     turno.isPagado(),
                     turno.isPagoWeb(),
-                    turno.getMetodoPago().toString(),
+                    metodoPago,
                     turno.getMonto());
         }).collect(Collectors.toList());
 
@@ -118,5 +121,4 @@ public class TurnoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
