@@ -10,6 +10,7 @@ import com.proyectospa.spa_app.service.ServicioService;
 import com.proyectospa.spa_app.service.TurnoService;
 import com.proyectospa.spa_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +72,7 @@ public class TurnoController {
 
     @GetMapping("/profesional")
     public ResponseEntity<List<TurnoProfesionalDTO>> obtenerTurnosDelProfesional(Authentication authentication) {
-        String email = authentication.getName(); // el email viene del token
+        String email = authentication.getName(); 
         List<TurnoProfesionalDTO> turnos = turnoService.obtenerTurnosPorEmail(email);
         return ResponseEntity.ok(turnos);
     }
@@ -121,4 +122,19 @@ public class TurnoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<TurnoDTO>> obtenerTurnosDelCliente(@PathVariable Integer clienteId,
+            Authentication authentication) {
+        String emailUsuarioLogueado = authentication.getName();
+        Usuario usuario = usuarioService.buscarPorEmail(emailUsuarioLogueado).orElse(null);
+
+        if (usuario == null || !usuario.getId().equals(clienteId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<TurnoDTO> turnos = turnoService.obtenerTurnosPorCliente(clienteId);
+        return ResponseEntity.ok(turnos);
+    }
+//PENDIENTE, HACER QUE EL PROFESIONAL (NOMBRE) Y EL SERVICIO (NOMBRE) SALGAN EN LA LSITA DE TURNOS
 }

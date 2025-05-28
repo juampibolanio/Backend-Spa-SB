@@ -31,7 +31,7 @@ public class AuthService {
         usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
         usuario.setDni(dto.getDni());
         usuario.setActivo(true);
-        usuario.setRol(dto.getRol() != null ? dto.getRol() : Rol.CLIENTE); // Por defecto CLIENTE
+        usuario.setRol(dto.getRol() != null ? dto.getRol() : Rol.CLIENTE); 
 
         return usuarioRepository.save(usuario);
     }

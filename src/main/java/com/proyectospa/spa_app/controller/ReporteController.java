@@ -22,7 +22,7 @@ public class ReporteController {
     @Autowired
     private ReporteService reporteService;
 
-    // Endpoint general: reporte de pagos filtrado por fecha, profesional y/o servicio
+    
     @GetMapping("/pagos")
     public ResponseEntity<?> obtenerReportePagos(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
@@ -38,7 +38,6 @@ public class ReporteController {
         return ResponseEntity.ok(reporte);
     }
 
-    // Reporte agrupado por profesional
     @GetMapping("/pagos/profesional")
     public ResponseEntity<?> reportePorProfesional(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
@@ -52,7 +51,7 @@ public class ReporteController {
         return ResponseEntity.ok(reporte);
     }
 
-    // Reporte agrupado por servicio
+    
     @GetMapping("/pagos/servicio")
     public ResponseEntity<?> reportePorServicio(
             @RequestParam("desde") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,

@@ -103,7 +103,6 @@ public class TurnoService {
         return turnoRepo.save(turno);
     }
 
-    // Mapeos
 
     public TurnoDTO toDTO(Turno turno) {
         TurnoDTO dto = new TurnoDTO();
@@ -186,7 +185,6 @@ public class TurnoService {
         LocalDate fecha = turnos.get(0).getFecha();
         Integer clienteId = turnos.get(0).getCliente().getId();
 
-        // Validaciones: misma fecha y cliente
         boolean mismoClienteYFecha = turnos.stream().allMatch(t -> t.getFecha().equals(fecha) &&
                 t.getCliente().getId().equals(clienteId));
 
@@ -194,7 +192,6 @@ public class TurnoService {
             throw new IllegalArgumentException("Todos los turnos deben ser del mismo cliente y fecha.");
         }
 
-        // Calcular total con descuento si aplica
         double total = 0;
         for (Turno t : turnos) {
             double precio = t.getServicio().getPrecio();
@@ -209,7 +206,6 @@ public class TurnoService {
             total += monto;
         }
 
-        // Enviar comprobante agrupado por mail
         emailService.enviarComprobante(
                 turnos.get(0).getCliente().getEmail(),
                 "Comprobante de pago agrupado",
@@ -237,7 +233,6 @@ public class TurnoService {
         return sb.toString();
     }
 
-    // En TurnoService.java
 
     public Map<String, Object> generarReportePagos(LocalDate desde, LocalDate hasta, Integer profesionalId,
             Integer servicioId) {
@@ -258,7 +253,7 @@ public class TurnoService {
         reporte.put("servicioId", servicioId);
         reporte.put("cantidadTurnos", cantidadTurnos);
         reporte.put("totalRecaudado", totalRecaudado);
-        reporte.put("detalle", toDTOList(turnos)); // ✅ esto funciona dentro del TurnoService
+        reporte.put("detalle", toDTOList(turnos)); 
 
         return reporte;
     }
@@ -299,5 +294,12 @@ public class TurnoService {
                 turno.getMetodoPago() != null ? turno.getMetodoPago().name() : null,
                 turno.getMonto())).toList();
     }
+
+    public List<TurnoDTO> obtenerTurnosPorCliente(Integer clienteId) {
+    List<Turno> turnos = turnoRepo.findByClienteId(clienteId);
+    return turnos.stream().map(this::toDTO).collect(Collectors.toList());
+}
+
+
 
 }

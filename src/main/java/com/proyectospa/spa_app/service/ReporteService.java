@@ -16,17 +16,16 @@ public class ReporteService {
     private TurnoRepository turnoRepo;
 
     public List<Map<String, Object>> reportePagosAgrupadoPorProfesional(LocalDate desde, LocalDate hasta) {
-        // Filtramos turnos pagados en el rango de fechas
+        
         List<Turno> turnos = turnoRepo.findAll().stream()
                 .filter(t -> !t.getFecha().isBefore(desde) && !t.getFecha().isAfter(hasta))
                 .filter(Turno::isPagado)
                 .collect(Collectors.toList());
 
-        // Agrupamos por profesional
+        
         Map<Integer, List<Turno>> turnosPorProfesional = turnos.stream()
                 .collect(Collectors.groupingBy(t -> t.getProfesional().getId()));
 
-        // Construimos la lista con totales por profesional
         List<Map<String, Object>> resultado = new ArrayList<>();
 
         for (Map.Entry<Integer, List<Turno>> entry : turnosPorProfesional.entrySet()) {

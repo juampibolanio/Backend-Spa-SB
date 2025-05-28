@@ -13,5 +13,6 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
     List<Turno> findByEstado(EstadoTurno estado);
     List<Turno> findByProfesionalIdAndEstado(Integer profesionalId, EstadoTurno estado);
     List<Turno> findByProfesionalId(Integer profesionalId);
+    List<Turno> findByClienteId(Integer clienteId);
 
 }

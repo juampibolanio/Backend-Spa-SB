@@ -16,6 +16,6 @@ public class TurnoDTO {
     private LocalTime horaFin;
     private boolean pagado;
     private boolean pagoWeb;
-    private String metodoPago; // nuevo campo como String
-    private double monto; // se ignora al convertir a entidad, solo se usa al devolver
+    private String metodoPago; 
+    private double monto; 
 }

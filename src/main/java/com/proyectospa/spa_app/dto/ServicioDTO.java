@@ -8,6 +8,5 @@ public class ServicioDTO {
     private String nombre;
     private String descripcion;
     private double precio;
-    private Integer profesionalId;  // para enviar solo el ID del profesional
+    private Integer profesionalId;  
 }
-//hay que seguir probando en postman, quedamos en crear un cliente

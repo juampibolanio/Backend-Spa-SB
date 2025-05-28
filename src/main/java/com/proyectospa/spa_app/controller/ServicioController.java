@@ -18,7 +18,7 @@ public class ServicioController {
     private ServicioService servicioService;
 
     @Autowired
-    private UsuarioService usuarioService; // Para buscar profesional
+    private UsuarioService usuarioService; 
 
     @PostMapping("/crear")
     public ResponseEntity<?> crearServicio(@RequestBody ServicioDTO dto) {

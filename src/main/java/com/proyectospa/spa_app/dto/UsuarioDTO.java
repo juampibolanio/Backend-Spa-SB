@@ -14,7 +14,7 @@ public class UsuarioDTO {
         this.apellido = usuario.getApellido();
         this.dni = usuario.getDni();
         this.email = usuario.getEmail();
-        this.rol = usuario.getRol().name(); // Si rol es un Enum
+        this.rol = usuario.getRol().name(); 
         this.activo = usuario.isActivo();
     }
 

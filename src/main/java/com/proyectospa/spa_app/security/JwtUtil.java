@@ -53,7 +53,6 @@ public class JwtUtil {
                 .parseClaimsJws(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // Aquí podés loguear si querés
         }
         return false;
     }

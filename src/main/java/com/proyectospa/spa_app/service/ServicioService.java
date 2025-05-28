@@ -28,7 +28,6 @@ public class ServicioService {
         return servicioRepo.findByProfesionalId(profesionalId);
     }
 
-    // Mapeos
 
     public ServicioDTO toDTO(Servicio servicio) {
         ServicioDTO dto = new ServicioDTO();
