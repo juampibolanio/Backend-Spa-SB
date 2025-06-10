@@ -63,4 +63,25 @@ public class UsuarioService {
         return new UsuarioDTO(usuario);
     }
 
+    public void eliminarUsuario(Integer id) {
+        Optional<Usuario> usuario = usuarioRepo.findById(id);
+        if (usuario.isPresent()) {
+            usuarioRepo.delete(usuario.get());
+        } else {
+            throw new UsernameNotFoundException("Usuario no encontrado con ID: " + id);
+        }
+    }
+
+    public Usuario activarUsuario(Integer id) {
+        Usuario usuario = usuarioRepo.findById(id).orElseThrow();
+        usuario.setActivo(true);
+        return usuarioRepo.save(usuario);
+    }
+
+    public Usuario desactivarUsuario(Integer id) {
+        Usuario usuario = usuarioRepo.findById(id).orElseThrow();
+        usuario.setActivo(false);
+        return usuarioRepo.save(usuario);
+    }
+
 }

@@ -39,5 +39,7 @@ public class Turno {
     private boolean pagado;
     private boolean pagoWeb;
     private double monto;
+    @Column(length = 500)
+    private String detalle; 
 
 }

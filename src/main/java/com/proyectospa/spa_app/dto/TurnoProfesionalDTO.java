@@ -15,6 +15,7 @@ public class TurnoProfesionalDTO {
     private Integer id;
     private String clienteNombre;
     private String clienteApellido;
+    public Integer clienteId;
     private String servicioNombre;
     private String fecha;
     private String horaInicio;
@@ -24,4 +25,6 @@ public class TurnoProfesionalDTO {
     private boolean pagoWeb;
     private String metodoPago;
     private double monto;
+    private String detalle;
+    
 }

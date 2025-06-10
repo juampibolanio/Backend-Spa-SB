@@ -58,4 +58,38 @@ public class UsuarioController {
         List<UsuarioDTO> clientes = usuarioService.listarClientes();
         return ResponseEntity.ok(clientes);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Usuario> eliminarUsuario(@PathVariable Integer id) {
+        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
+        if (usuario.isPresent()) {
+            usuarioService.eliminarUsuario(id);
+            return ResponseEntity.ok(usuario.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}/activar")
+    public ResponseEntity<Usuario> activarUsuario(@PathVariable Integer id) {
+        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
+        if (usuario.isPresent()) {
+            Usuario actualizado = usuarioService.activarUsuario(id);
+            return ResponseEntity.ok(actualizado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/{id}/desactivar")
+    public ResponseEntity<Usuario> desactivarUsuario(@PathVariable Integer id) {
+        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
+        if (usuario.isPresent()) {
+            Usuario actualizado = usuarioService.desactivarUsuario(id);
+            return ResponseEntity.ok(actualizado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

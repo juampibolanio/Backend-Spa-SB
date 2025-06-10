@@ -18,4 +18,5 @@ public class TurnoDTO {
     private boolean pagoWeb;
     private String metodoPago; 
     private double monto; 
+    private String detalle;
 }

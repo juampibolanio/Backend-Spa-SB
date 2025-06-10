@@ -1,6 +1,8 @@
 package com.proyectospa.spa_app.service;
 
+import com.proyectospa.spa_app.dto.ClienteResumenDTO;
 import com.proyectospa.spa_app.dto.TurnoDTO;
+import com.proyectospa.spa_app.dto.TurnoHistorialDTO;
 import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
 import com.proyectospa.spa_app.model.EstadoTurno;
 import com.proyectospa.spa_app.model.MetodoPago;
@@ -85,6 +87,7 @@ public class TurnoService {
                 turno.getId(),
                 turno.getCliente().getNombre(),
                 turno.getCliente().getApellido(),
+                turno.getCliente().getId(),
                 turno.getServicio().getNombre(),
                 turno.getFecha().toString(),
                 turno.getHoraInicio().toString(),
@@ -93,7 +96,8 @@ public class TurnoService {
                 turno.isPagado(),
                 turno.isPagoWeb(),
                 turno.getMetodoPago() != null ? turno.getMetodoPago().name() : null,
-                turno.getMonto())).toList();
+                turno.getMonto(),
+                turno.getDetalle())).toList();
     }
 
     public Turno cambiarEstado(Integer turnoId, EstadoTurno nuevoEstado) {
@@ -102,7 +106,6 @@ public class TurnoService {
         turno.setEstado(nuevoEstado);
         return turnoRepo.save(turno);
     }
-
 
     public TurnoDTO toDTO(Turno turno) {
         TurnoDTO dto = new TurnoDTO();
@@ -123,6 +126,7 @@ public class TurnoService {
         if (turno.getMetodoPago() != null)
             dto.setMetodoPago(turno.getMetodoPago().name());
         dto.setMonto(turno.getMonto());
+        dto.setDetalle(turno.getDetalle());
         return dto;
     }
 
@@ -233,7 +237,6 @@ public class TurnoService {
         return sb.toString();
     }
 
-
     public Map<String, Object> generarReportePagos(LocalDate desde, LocalDate hasta, Integer profesionalId,
             Integer servicioId) {
         List<Turno> turnos = turnoRepo.findAll().stream()
@@ -253,7 +256,7 @@ public class TurnoService {
         reporte.put("servicioId", servicioId);
         reporte.put("cantidadTurnos", cantidadTurnos);
         reporte.put("totalRecaudado", totalRecaudado);
-        reporte.put("detalle", toDTOList(turnos)); 
+        reporte.put("detalle", toDTOList(turnos));
 
         return reporte;
     }
@@ -263,6 +266,7 @@ public class TurnoService {
                 turno.getId(),
                 turno.getCliente().getNombre(),
                 turno.getCliente().getApellido(),
+                turno.getCliente().getId(),
                 turno.getServicio().getNombre(),
                 turno.getFecha().toString(),
                 turno.getHoraInicio().toString(),
@@ -271,7 +275,8 @@ public class TurnoService {
                 turno.isPagado(),
                 turno.isPagoWeb(),
                 turno.getMetodoPago().name(),
-                turno.getMonto());
+                turno.getMonto(),
+                turno.getDetalle());
     }
 
     public List<TurnoProfesionalDTO> obtenerTurnosPorEmail(String email) {
@@ -284,6 +289,7 @@ public class TurnoService {
                 turno.getId(),
                 turno.getCliente().getNombre(),
                 turno.getCliente().getApellido(),
+                turno.getCliente().getId(),
                 turno.getServicio().getNombre(),
                 turno.getFecha().toString(),
                 turno.getHoraInicio().toString(),
@@ -292,14 +298,69 @@ public class TurnoService {
                 turno.isPagado(),
                 turno.isPagoWeb(),
                 turno.getMetodoPago() != null ? turno.getMetodoPago().name() : null,
-                turno.getMonto())).toList();
+                turno.getMonto(),
+                turno.getDetalle())).toList();
     }
 
     public List<TurnoDTO> obtenerTurnosPorCliente(Integer clienteId) {
-    List<Turno> turnos = turnoRepo.findByClienteId(clienteId);
-    return turnos.stream().map(this::toDTO).collect(Collectors.toList());
-}
+        List<Turno> turnos = turnoRepo.findByClienteId(clienteId);
+        return turnos.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
+    public List<TurnoDTO> obtenerHistorialPorCliente(Long clienteId) {
+        List<Turno> turnos = turnoRepo.findByClienteIdOrderByFechaDesc(clienteId);
+        return turnos.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
 
+    public List<ClienteResumenDTO> obtenerClientesDeProfesional(Integer profesionalId) {
+        List<Turno> turnos = turnoRepo.findByProfesionalId(profesionalId);
+
+        return turnos.stream()
+                .map(turno -> turno.getCliente())
+                .distinct() // evita duplicados (necesitás implementar equals/hashCode en Usuario)
+                .map(cliente -> new ClienteResumenDTO(
+                        cliente.getId(),
+                        cliente.getNombre(),
+                        cliente.getApellido(),
+                        cliente.getEmail()))
+                .collect(Collectors.toList());
+    }
+
+    public List<TurnoHistorialDTO> obtenerHistorialDeCliente(Integer profesionalId, Integer clienteId) {
+        List<Turno> turnos = turnoRepo.findByProfesionalIdAndClienteId(profesionalId, clienteId);
+
+        return turnos.stream().map(turno -> new TurnoHistorialDTO(
+                turno.getId(),
+                turno.getServicio().getNombre(),
+                turno.getFecha().toString(),
+                turno.getHoraInicio().toString(),
+                turno.getHoraFin().toString(),
+                (turno.getEstado() != null) ? turno.getEstado().toString() : "SIN_ESTADO",
+                turno.isPagado(),
+                (turno.getMetodoPago() != null) ? turno.getMetodoPago().toString() : "NO_ESPECIFICADO",
+                turno.getMonto(),
+                turno.getDetalle())).collect(Collectors.toList());
+    }
+
+    public void agregarDetalleAtencion(Integer turnoId, String detalle) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado con ID: " + turnoId));
+        turno.setDetalle(detalle);
+        turnoRepo.save(turno);
+    }
+
+    public List<Turno> historialPorCliente(Integer clienteId) {
+        return turnoRepo.findByClienteId(clienteId);
+    }
+
+    public void actualizarDetalle(Integer turnoId, String nuevoDetalle) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
+
+        turno.setDetalle(nuevoDetalle);
+        turnoRepo.save(turno);
+    }
 
 }

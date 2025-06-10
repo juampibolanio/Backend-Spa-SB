@@ -1,6 +1,9 @@
 package com.proyectospa.spa_app.controller;
 
+import com.proyectospa.spa_app.dto.ClienteResumenDTO;
+import com.proyectospa.spa_app.dto.DetalleAtencionDTO;
 import com.proyectospa.spa_app.dto.TurnoDTO;
+import com.proyectospa.spa_app.dto.TurnoHistorialDTO;
 import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
 import com.proyectospa.spa_app.model.Servicio;
 import com.proyectospa.spa_app.model.Turno;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,7 +76,7 @@ public class TurnoController {
 
     @GetMapping("/profesional")
     public ResponseEntity<List<TurnoProfesionalDTO>> obtenerTurnosDelProfesional(Authentication authentication) {
-        String email = authentication.getName(); 
+        String email = authentication.getName();
         List<TurnoProfesionalDTO> turnos = turnoService.obtenerTurnosPorEmail(email);
         return ResponseEntity.ok(turnos);
     }
@@ -88,6 +92,7 @@ public class TurnoController {
                     turno.getId(),
                     turno.getCliente().getNombre(),
                     turno.getCliente().getApellido(),
+                    turno.getCliente().getId(),
                     turno.getServicio().getNombre(),
                     turno.getFecha().toString(),
                     turno.getHoraInicio().toString(),
@@ -96,7 +101,8 @@ public class TurnoController {
                     turno.isPagado(),
                     turno.isPagoWeb(),
                     metodoPago,
-                    turno.getMonto());
+                    turno.getMonto(),
+                    turno.getDetalle());
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(resultado);
@@ -136,5 +142,61 @@ public class TurnoController {
         List<TurnoDTO> turnos = turnoService.obtenerTurnosPorCliente(clienteId);
         return ResponseEntity.ok(turnos);
     }
-//PENDIENTE, HACER QUE EL PROFESIONAL (NOMBRE) Y EL SERVICIO (NOMBRE) SALGAN EN LA LSITA DE TURNOS
+    //PENDIENTE ARREGLAR LOS ESTILOS DEL PANEL DE PROFESIONAL, ARREGLAR LO DEL HISTORIAL DE TURNOS, Q SE VEA TMB EL DETALLE, 
+    // LA LSITA DE TURNOS
+
+    @GetMapping("/cliente/{clienteId}/historial")
+    public ResponseEntity<List<TurnoProfesionalDTO>> historialPorCliente(@PathVariable Integer clienteId) {
+        List<Turno> turnos = turnoService.historialPorCliente(clienteId);
+        List<TurnoProfesionalDTO> resultado = turnos.stream().map(turno -> {
+            String estado = (turno.getEstado() != null) ? turno.getEstado().toString() : "SIN_ESTADO";
+            String metodoPago = (turno.getMetodoPago() != null) ? turno.getMetodoPago().toString() : "NO_ESPECIFICADO";
+
+            return new TurnoProfesionalDTO(
+                    turno.getId(),
+                    turno.getCliente().getNombre(),
+                    turno.getCliente().getApellido(),
+                    turno.getCliente().getId(),
+                    turno.getServicio().getNombre(),
+                    turno.getFecha().toString(),
+                    turno.getHoraInicio().toString(),
+                    turno.getHoraFin().toString(),
+                    estado,
+                    turno.isPagado(),
+                    turno.isPagoWeb(),
+                    metodoPago,
+                    turno.getMonto(),
+                    turno.getDetalle());
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    @GetMapping("/profesional/{id}/clientes")
+    public ResponseEntity<List<ClienteResumenDTO>> listarClientesDeProfesional(@PathVariable Integer id) {
+        List<ClienteResumenDTO> clientes = turnoService.obtenerClientesDeProfesional(id);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/profesional/{profesionalId}/cliente/{clienteId}/historial")
+    public ResponseEntity<List<TurnoHistorialDTO>> verHistorialDelCliente(
+            @PathVariable Integer profesionalId,
+            @PathVariable Integer clienteId) {
+        List<TurnoHistorialDTO> historial = turnoService.obtenerHistorialDeCliente(profesionalId, clienteId);
+        return ResponseEntity.ok(historial);
+    }
+
+    @PutMapping("/{id}/detalle-atencion")
+    public ResponseEntity<String> agregarDetalleAtencion(@PathVariable Integer id,
+            @RequestBody DetalleAtencionDTO dto) {
+        turnoService.agregarDetalleAtencion(id, dto.getDetalle());
+        return ResponseEntity.ok("Detalle de atención actualizado correctamente.");
+    }
+
+    @PutMapping("/{id}/detalle")
+    public ResponseEntity<String> actualizarDetalle(@PathVariable Integer id, @RequestBody String nuevoDetalle) {
+        turnoService.actualizarDetalle(id, nuevoDetalle);
+        return ResponseEntity.ok("Detalle actualizado correctamente.");
+    }
+
 }
