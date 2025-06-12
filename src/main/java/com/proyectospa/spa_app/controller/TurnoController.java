@@ -2,6 +2,7 @@ package com.proyectospa.spa_app.controller;
 
 import com.proyectospa.spa_app.dto.ClienteResumenDTO;
 import com.proyectospa.spa_app.dto.DetalleAtencionDTO;
+import com.proyectospa.spa_app.dto.SolicitudTurnosDTO;
 import com.proyectospa.spa_app.dto.TurnoDTO;
 import com.proyectospa.spa_app.dto.TurnoHistorialDTO;
 import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
@@ -142,7 +143,8 @@ public class TurnoController {
         List<TurnoDTO> turnos = turnoService.obtenerTurnosPorCliente(clienteId);
         return ResponseEntity.ok(turnos);
     }
-    //PENDIENTE ARREGLAR LOS ESTILOS DEL PANEL DE PROFESIONAL, ARREGLAR LO DEL HISTORIAL DE TURNOS, Q SE VEA TMB EL DETALLE, 
+    // PENDIENTE ARREGLAR LOS ESTILOS DEL PANEL DE PROFESIONAL, ARREGLAR LO DEL
+    // HISTORIAL DE TURNOS, Q SE VEA TMB EL DETALLE,
     // LA LSITA DE TURNOS
 
     @GetMapping("/cliente/{clienteId}/historial")
@@ -197,6 +199,12 @@ public class TurnoController {
     public ResponseEntity<String> actualizarDetalle(@PathVariable Integer id, @RequestBody String nuevoDetalle) {
         turnoService.actualizarDetalle(id, nuevoDetalle);
         return ResponseEntity.ok("Detalle actualizado correctamente.");
+    }
+
+    @PostMapping("/multiples")
+    public ResponseEntity<List<TurnoDTO>> registrarMultiplesTurnos(@RequestBody List<SolicitudTurnosDTO> solicitudes) {
+        List<TurnoDTO> turnosRegistrados = turnoService.registrarTurnosDesdeSolicitud(solicitudes);
+        return ResponseEntity.ok(turnosRegistrados);
     }
 
 }

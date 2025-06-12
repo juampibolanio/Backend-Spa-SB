@@ -1,8 +1,10 @@
 package com.proyectospa.spa_app.service;
 
 import com.proyectospa.spa_app.dto.ClienteResumenDTO;
+import com.proyectospa.spa_app.dto.SolicitudTurnosDTO;
 import com.proyectospa.spa_app.dto.TurnoDTO;
 import com.proyectospa.spa_app.dto.TurnoHistorialDTO;
+import com.proyectospa.spa_app.dto.TurnoPorDiaDTO;
 import com.proyectospa.spa_app.dto.TurnoProfesionalDTO;
 import com.proyectospa.spa_app.model.EstadoTurno;
 import com.proyectospa.spa_app.model.MetodoPago;
@@ -11,11 +13,14 @@ import com.proyectospa.spa_app.model.Turno;
 import com.proyectospa.spa_app.model.Usuario;
 import com.proyectospa.spa_app.repository.TurnoRepository;
 import com.proyectospa.spa_app.repository.UsuarioRepository;
+import com.proyectospa.spa_app.repository.ServicioRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +34,11 @@ public class TurnoService {
 
     @Autowired
     private TurnoRepository turnoRepo;
-
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ServicioRepository servicioRepository;
 
     public Turno crearTurno(Turno turno) {
         if (turno.getFecha().isBefore(LocalDate.now().plusDays(2))) {
@@ -241,7 +248,6 @@ public class TurnoService {
             Integer servicioId) {
         List<Turno> turnos = turnoRepo.findAll().stream()
                 .filter(t -> !t.getFecha().isBefore(desde) && !t.getFecha().isAfter(hasta))
-                .filter(Turno::isPagado)
                 .filter(t -> profesionalId == null || t.getProfesional().getId().equals(profesionalId))
                 .filter(t -> servicioId == null || t.getServicio().getId().equals(servicioId))
                 .toList();
@@ -361,6 +367,71 @@ public class TurnoService {
 
         turno.setDetalle(nuevoDetalle);
         turnoRepo.save(turno);
+    }
+
+    public List<Turno> convertirDesdeSolicitudTurnosDTO(SolicitudTurnosDTO dto) {
+        List<Turno> turnos = new ArrayList<>();
+
+        Usuario cliente = usuarioRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        Usuario profesional = usuarioRepository.findById(dto.getProfesionalId())
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+
+        for (TurnoPorDiaDTO diaDTO : dto.getTurnosPorDia()) {
+            LocalDate fecha = diaDTO.getFecha();
+            LocalTime horaInicio = diaDTO.getHoraInicio();
+            LocalTime horaFin = diaDTO.getHoraFin(); // lo que elegió el usuario
+
+            for (Integer servicioId : diaDTO.getServicioIds()) {
+                Servicio servicio = servicioRepository.findById(servicioId)
+                        .orElseThrow(() -> new RuntimeException("Servicio no encontrado: " + servicioId));
+
+                Turno turno = new Turno();
+                turno.setCliente(cliente);
+                turno.setProfesional(profesional);
+                turno.setServicio(servicio);
+                turno.setFecha(fecha);
+                turno.setHoraInicio(horaInicio);
+                turno.setHoraFin(horaFin); // tomamos la hora fin del DTO
+
+                turno.setEstado(EstadoTurno.PENDIENTE);
+                turno.setPagoWeb(dto.isPagoWeb());
+                turno.setMetodoPago(MetodoPago.valueOf(dto.getMetodoPago().toUpperCase()));
+                turno.setPagado(false);
+
+                // Cálculo del monto con posible descuento
+                double monto = servicio.getPrecio();
+                boolean aplicaDescuento = dto.isPagoWeb()
+                        && turno.getMetodoPago() == MetodoPago.TARJETA_DEBITO
+                        && LocalDate.now().plusDays(2).isBefore(fecha);
+
+                if (aplicaDescuento) {
+                    monto *= 0.85;
+                }
+
+                turno.setMonto(monto);
+                turno.setDetalle("Sin detalle");
+
+                turnos.add(turno);
+            }
+        }
+
+        return turnos;
+    }
+
+    public List<TurnoDTO> registrarTurnosDesdeSolicitud(List<SolicitudTurnosDTO> solicitudes) {
+        List<Turno> todosLosTurnos = new ArrayList<>();
+
+        for (SolicitudTurnosDTO solicitud : solicitudes) {
+            List<Turno> turnos = convertirDesdeSolicitudTurnosDTO(solicitud);
+            todosLosTurnos.addAll(turnos);
+        }
+
+        List<Turno> turnosGuardados = turnoRepo.saveAll(todosLosTurnos);
+
+        return turnosGuardados.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 
 }

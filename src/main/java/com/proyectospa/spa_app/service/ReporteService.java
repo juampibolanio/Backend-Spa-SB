@@ -19,7 +19,6 @@ public class ReporteService {
         
         List<Turno> turnos = turnoRepo.findAll().stream()
                 .filter(t -> !t.getFecha().isBefore(desde) && !t.getFecha().isAfter(hasta))
-                .filter(Turno::isPagado)
                 .collect(Collectors.toList());
 
         
@@ -51,7 +50,6 @@ public class ReporteService {
     public List<Map<String, Object>> reportePagosAgrupadoPorServicio(LocalDate desde, LocalDate hasta) {
     List<Turno> turnos = turnoRepo.findAll().stream()
             .filter(t -> !t.getFecha().isBefore(desde) && !t.getFecha().isAfter(hasta))
-            .filter(Turno::isPagado)
             .collect(Collectors.toList());
 
     Map<Integer, List<Turno>> turnosPorServicio = turnos.stream()
