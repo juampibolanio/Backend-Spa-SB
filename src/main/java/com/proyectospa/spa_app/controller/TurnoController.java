@@ -109,16 +109,6 @@ public class TurnoController {
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/{id}/comprobante")
-    public ResponseEntity<String> obtenerComprobante(@PathVariable Integer id) {
-        Turno turno = turnoService.buscarPorId(id);
-        if (turno == null) {
-            return ResponseEntity.notFound().build();
-        }
-        String html = turnoService.generarContenidoHtml(turno);
-        return ResponseEntity.ok().body(html);
-    }
-
     @PostMapping("/pago-agrupado")
     public ResponseEntity<?> pagarTurnosAgrupados(@RequestBody List<Integer> turnoIds) {
         try {

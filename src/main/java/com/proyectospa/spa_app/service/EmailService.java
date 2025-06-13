@@ -19,11 +19,13 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
             helper.setTo(destinatario);
             helper.setSubject(asunto);
-            helper.setText(contenidoHtml, true); 
+            helper.setFrom("pepiyo32w@gmail.com");
+            helper.setText(contenidoHtml, true); // HTML
 
             mailSender.send(mensaje);
         } catch (MessagingException e) {
             throw new RuntimeException("Error al enviar el correo: " + e.getMessage());
         }
     }
+
 }

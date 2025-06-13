@@ -369,6 +369,26 @@ public class TurnoService {
         turnoRepo.save(turno);
     }
 
+    public String generarComprobanteHtml(List<Turno> turnos) {
+        StringBuilder html = new StringBuilder();
+        html.append("<h2>Comprobante de turnos - SPA Sentirse Bien - By Ana Felicidad</h2>");
+        html.append("<p>Gracias por reservar con nosotros. Aquí están los detalles de tus turnos:</p>");
+        html.append("<ul>");
+        for (Turno t : turnos) {
+            html.append("<li>")
+                    .append("<b>Fecha:</b> ").append(t.getFecha()).append(" - ")
+                    .append("<b>Hora:</b> ").append(t.getHoraInicio()).append(" a ").append(t.getHoraFin())
+                    .append(" - ")
+                    .append("<b>Servicio:</b> ").append(t.getServicio().getNombre()).append(" - ")
+                    .append("<b>Profesional:</b> ").append(t.getProfesional().getNombre() + t.getProfesional().getApellido())
+                    .append("</li>");
+        }
+        html.append("</ul>");
+        double total = turnos.stream().mapToDouble(Turno::getMonto).sum();
+        html.append("<p><b>Total:</b> $" + String.format("%.2f", total) + "</p>");
+        return html.toString();
+    }
+
     public List<Turno> convertirDesdeSolicitudTurnosDTO(SolicitudTurnosDTO dto) {
         List<Turno> turnos = new ArrayList<>();
 
@@ -428,6 +448,16 @@ public class TurnoService {
         }
 
         List<Turno> turnosGuardados = turnoRepo.saveAll(todosLosTurnos);
+
+        // 🚀 Enviar el mail después de guardar
+        if (!turnosGuardados.isEmpty()) {
+            Usuario cliente = turnosGuardados.get(0).getCliente();
+            String emailCliente = cliente.getEmail();
+            String asunto = "Comprobante de tus turnos";
+            String contenidoHtml = generarComprobanteHtml(turnosGuardados);
+
+            emailService.enviarComprobante(emailCliente, asunto, contenidoHtml);
+        }
 
         return turnosGuardados.stream()
                 .map(this::toDTO)
