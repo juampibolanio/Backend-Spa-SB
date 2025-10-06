@@ -5,7 +5,6 @@ import com.proyectospa.spa_app.model.Producto;
 import com.proyectospa.spa_app.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -107,5 +106,3 @@ public class ProductoService implements IProductoService {
                 .collect(Collectors.toList());
     }
 }
-
-    //ESTOY HACIENDO SERVICES HICE MODEL, FALTA CONTROLLER, DTO ACTUALIZADO TMB, REPOSITORY HECHO TMB, PRODUCTO SERVICE EN MARCHA.
