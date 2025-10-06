@@ -9,6 +9,7 @@ import com.proyectospa.spa_app.repository.ProductoRepository;
 import com.proyectospa.spa_app.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.proyectospa.spa_app.model.MetodoPago;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class FacturaService {
                 .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
 
         Factura factura = new Factura();
-        factura.setMetodoPago(Enum.valueOf(Factura.MetodoPago.class, dto.getMetodoPago()));
+        factura.setMetodoPago(Enum.valueOf(MetodoPago.class, dto.getMetodoPago()));
         factura.setUsuario(usuario);
         factura.setProducto(producto);
 

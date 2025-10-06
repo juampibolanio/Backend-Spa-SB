@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
-    List<Producto> findbyId(Integer productoID);
-
     // Filtrar por categoría
     List<Producto> findByCategoria_Nombre(String categoriaNombre);
 
