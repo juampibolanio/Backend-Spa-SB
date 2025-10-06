@@ -47,7 +47,7 @@ public class CategoriaService {
         categoriaRepository.deleteById(id);
     }
 
-    // Método auxiliar para convertir Entity -> DTO
+    // Método auxiliar para convertir Entity DTO
     private CategoriaDTO convertirADTO(Categoria categoria) {
         CategoriaDTO dto = new CategoriaDTO();
         dto.setId(categoria.getId());

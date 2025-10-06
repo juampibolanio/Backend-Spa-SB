@@ -25,7 +25,7 @@ public class ServicioService {
     }
 
     public List<Servicio> listarPorProfesional(Integer profesionalId) {
-        return servicioRepo.findByProfesionalId(profesionalId);
+        return servicioRepo.findByProfesional_Id(profesionalId);
     }
 
 
@@ -56,4 +56,5 @@ public class ServicioService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    
 }

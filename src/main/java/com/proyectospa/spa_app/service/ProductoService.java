@@ -16,7 +16,6 @@ public class ProductoService implements IProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    //Método auxiliar para mapear de Entity a DTO
     private ProductoDTO convertirADTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
         dto.setId(producto.getId());
@@ -34,7 +33,6 @@ public class ProductoService implements IProductoService {
         return dto;
     }
 
-    //Método auxiliar para mapear de DTO a Entity
     private Producto convertirAEntidad(ProductoDTO dto) {
         Producto producto = new Producto();
         producto.setId(dto.getId());
@@ -105,4 +103,11 @@ public class ProductoService implements IProductoService {
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
+
+    public List<ProductoDTO> listarPorFiltros(Integer categoriaId, String nombre) {
+    return productoRepository.buscarPorFiltros(categoriaId, nombre)
+            .stream()
+            .map(this::convertirADTO)
+            .collect(Collectors.toList());
+}
 }

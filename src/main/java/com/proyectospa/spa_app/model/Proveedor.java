@@ -14,7 +14,7 @@ public class Proveedor {
 
     private String nombre;
 
-    private String contacto; // email o teléfono
+    private String contacto;
 
     private String direccion;
 

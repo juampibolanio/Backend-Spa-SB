@@ -11,7 +11,7 @@ public interface IProductoService {
     ProductoDTO guardar(ProductoDTO productoDTO);
     void eliminar(Integer id);
 
-    // Filtros específicos
+    // Filtros 
     List<ProductoDTO> listarPorCategoria(String categoriaNombre);
     List<ProductoDTO> listarOfertas();
     List<ProductoDTO> listarPorRangoDePrecio(BigDecimal min, BigDecimal max);

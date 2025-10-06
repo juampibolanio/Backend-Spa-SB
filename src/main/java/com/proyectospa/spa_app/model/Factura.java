@@ -2,11 +2,13 @@ package com.proyectospa.spa_app.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
 public class Factura {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -18,7 +20,10 @@ public class Factura {
     @JoinColumn(name = "cliente_id")
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "producto_id")
-    private Producto producto;
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL)
+    private List<FacturaProducto> productos; 
+
+    private BigDecimal descuento;
+    private BigDecimal total;
+    private LocalDateTime fecha;
 }
