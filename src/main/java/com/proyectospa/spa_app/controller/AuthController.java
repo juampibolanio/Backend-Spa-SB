@@ -4,6 +4,7 @@ import com.proyectospa.spa_app.dto.LoginDTO;
 import com.proyectospa.spa_app.dto.RegistroUsuarioDTO;
 import com.proyectospa.spa_app.model.Usuario;
 import com.proyectospa.spa_app.security.JwtUtil;
+import com.proyectospa.spa_app.security.UserDetailsImpl;
 import com.proyectospa.spa_app.service.AuthService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,21 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String role = authentication.getAuthorities().stream()
+            // Obtenemos el usuario logueado
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            Integer userId = userDetails.getId(); // <-- ID del usuario
+            String role = userDetails.getAuthorities().stream()
                     .findFirst()
                     .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
                     .orElse("UNKNOWN");
 
-            String jwt = jwtUtil.generateJwtToken(request.getEmail(), role);
+            // Generamos el token incluyendo el ID
+            String jwt = jwtUtil.generateJwtToken(userDetails.getUsername(), role, userId);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (BadCredentialsException e) {

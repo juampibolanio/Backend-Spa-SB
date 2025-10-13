@@ -29,6 +29,11 @@ public class UserDetailsImpl implements UserDetails {
         return usuario.getEmail();
     }
 
+    // Método personalizado para obtener el ID del usuario
+    public Integer getId() {
+        return usuario.getId();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return usuario.isActivo();

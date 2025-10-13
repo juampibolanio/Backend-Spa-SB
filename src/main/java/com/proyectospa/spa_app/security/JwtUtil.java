@@ -11,22 +11,26 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    // Clave secreta en Base64
     private final String jwtSecretBase64 = "q3JkZWxsaWNhbnRlLXZlcnRlLWxhLXNlY3JldGEtMTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6";
 
     private final SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretBase64));
 
     private final long jwtExpirationMs = 86400000; // 24h
 
-    public String generateJwtToken(String username, String role) {
+    // Genera token con email, rol y id
+    public String generateJwtToken(String username, String role, Integer id) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("role", role)
+                .setSubject(username)        // email
+                .claim("role", role)         // rol del usuario
+                .claim("id", id)             // id del usuario
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
+    // Obtener email (sub) del token
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -36,6 +40,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
+    // Obtener rol del token
     public String getRoleFromJwtToken(String token) {
         return (String) Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -45,6 +50,17 @@ public class JwtUtil {
                 .get("role");
     }
 
+    // Obtener id del token
+    public Long getIdFromJwtToken(String token) {
+        return ((Number) Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id")).longValue();
+    }
+
+    // Validar token
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder()
@@ -53,6 +69,7 @@ public class JwtUtil {
                 .parseClaimsJws(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            System.err.println("Error validando JWT: " + e.getMessage());
         }
         return false;
     }

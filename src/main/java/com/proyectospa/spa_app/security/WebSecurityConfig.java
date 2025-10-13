@@ -37,6 +37,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/api/proveedores/**").permitAll()
                 .requestMatchers("/api/productos/**").authenticated()
                 .requestMatchers("/api/proveedores/**").authenticated()
+                .requestMatchers("/api/facturas/**").authenticated()
                 .anyRequest().authenticated()
             );
 
