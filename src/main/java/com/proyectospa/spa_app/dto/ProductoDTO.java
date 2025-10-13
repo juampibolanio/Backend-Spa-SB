@@ -12,8 +12,10 @@ public class ProductoDTO {
     private BigDecimal precio;
     private String descripcion;
     private String imagen;
-    private String categoriaNombre;
-    
+    private Integer categoria_id;
+    private Integer proveedor_id;
+    private Integer stock;
+
     private boolean oferta;
     private Integer ventas;
     private LocalDate fechaLanzamiento;

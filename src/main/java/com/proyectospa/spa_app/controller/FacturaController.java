@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/facturas")
+@RequestMapping("api/facturas")
 public class FacturaController {
 
     @Autowired

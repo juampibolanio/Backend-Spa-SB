@@ -2,7 +2,6 @@ package com.proyectospa.spa_app.controller;
 
 import com.proyectospa.spa_app.model.Producto;
 import com.proyectospa.spa_app.dto.ProductoDTO;
-import com.proyectospa.spa_app.model.Categoria;
 import com.proyectospa.spa_app.repository.ProductoRepository;
 import com.proyectospa.spa_app.service.ProductoService;
 import com.proyectospa.spa_app.repository.CategoriaRepository;
@@ -10,9 +9,10 @@ import com.proyectospa.spa_app.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -29,12 +29,17 @@ public class ProductoController {
 
     //agregar producto
     @PostMapping
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto producto) {
-        if (producto.getCategoria() != null) {
-            Optional<Categoria> cat = categoriaRepository.findById(producto.getCategoria().getId());
-            cat.ifPresent(producto::setCategoria);
+    public ResponseEntity<ProductoDTO> crearProducto(
+            @RequestPart("producto") ProductoDTO productoDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen
+    ) throws IOException {
+
+        if (productoDTO.getCategoria_id() != null) {
+            categoriaRepository.findById(productoDTO.getCategoria_id())
+                    .ifPresent(c -> productoDTO.setCategoria_id(c.getId()));
         }
-        Producto nuevoProducto = productoRepository.save(producto);
+
+        ProductoDTO nuevoProducto = productoService.guardar(productoDTO, imagen);
         return ResponseEntity.ok(nuevoProducto);
     }
 
@@ -54,26 +59,20 @@ public class ProductoController {
 
     //modificar producto
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizarProducto(@PathVariable Integer id, @RequestBody Producto productoActualizado) {
-        return productoRepository.findById(id)
-                .map(producto -> {
-                    producto.setNombre(productoActualizado.getNombre());
-                    producto.setPrecio(productoActualizado.getPrecio());
-                    producto.setDescripcion(productoActualizado.getDescripcion());
-                    producto.setImagen(productoActualizado.getImagen());
-                    producto.setOferta(productoActualizado.isOferta());
-                    producto.setVentas(productoActualizado.getVentas());
-                    producto.setFechaLanzamiento(productoActualizado.getFechaLanzamiento());
-                    producto.setDescuento(productoActualizado.getDescuento());
+    public ResponseEntity<ProductoDTO> actualizarProducto(
+            @PathVariable Integer id,
+            @RequestPart("producto") ProductoDTO productoDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen
+    ) throws IOException {
 
-                    if (productoActualizado.getCategoria() != null) {
-                        categoriaRepository.findById(productoActualizado.getCategoria().getId())
-                                .ifPresent(producto::setCategoria);
-                    }
+        if (productoDTO.getCategoria_id() != null) {
+            categoriaRepository.findById(productoDTO.getCategoria_id())
+                    .ifPresent(c -> productoDTO.setCategoria_id(c.getId()));
+        }
 
-                    Producto actualizado = productoRepository.save(producto);
-                    return ResponseEntity.ok(actualizado);
-                }).orElse(ResponseEntity.notFound().build());
+        productoDTO.setId(id);
+        ProductoDTO actualizado = productoService.guardar(productoDTO, imagen);
+        return ResponseEntity.ok(actualizado);
     }
 
     //eliminar producto

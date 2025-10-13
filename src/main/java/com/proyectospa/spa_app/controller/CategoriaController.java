@@ -23,6 +23,7 @@ public class CategoriaController {
     }
 
     //obtener todas las categorías
+    @GetMapping
     public List<Categoria> listarCategorias() {
         return categoriaRepository.findAll();
     }

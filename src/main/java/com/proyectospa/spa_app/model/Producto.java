@@ -23,6 +23,7 @@ public class Producto {
     private Integer ventas;
     private LocalDate fechaLanzamiento;
     private BigDecimal descuento;
+    private Integer stock = 0;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
