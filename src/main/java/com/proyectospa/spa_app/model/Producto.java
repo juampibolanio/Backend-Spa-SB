@@ -1,6 +1,7 @@
 package com.proyectospa.spa_app.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,8 +19,17 @@ public class Producto {
     private String descripcion;
     private String imagen;
 
+    private boolean oferta;
+    private Integer ventas;
+    private LocalDate fechaLanzamiento;
+    private BigDecimal descuento;
+    private Integer stock = 0;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "proveedor_id")
+    private Proveedor proveedor;
 }

@@ -20,7 +20,7 @@ public class EmailService {
             helper.setTo(destinatario);
             helper.setSubject(asunto);
             helper.setFrom("pepiyo32w@gmail.com");
-            helper.setText(contenidoHtml, true); // HTML
+            helper.setText(contenidoHtml, true); 
 
             mailSender.send(mensaje);
         } catch (MessagingException e) {

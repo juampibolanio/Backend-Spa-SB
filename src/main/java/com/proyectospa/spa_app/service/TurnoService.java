@@ -313,7 +313,7 @@ public class TurnoService {
         return turnos.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public List<TurnoDTO> obtenerHistorialPorCliente(Long clienteId) {
+    public List<TurnoDTO> obtenerHistorialPorCliente(Integer clienteId) {
         List<Turno> turnos = turnoRepo.findByClienteIdOrderByFechaDesc(clienteId);
         return turnos.stream()
                 .map(this::toDTO)
@@ -325,7 +325,7 @@ public class TurnoService {
 
         return turnos.stream()
                 .map(turno -> turno.getCliente())
-                .distinct() // evita duplicados (necesitás implementar equals/hashCode en Usuario)
+                .distinct()
                 .map(cliente -> new ClienteResumenDTO(
                         cliente.getId(),
                         cliente.getNombre(),
@@ -400,7 +400,7 @@ public class TurnoService {
         for (TurnoPorDiaDTO diaDTO : dto.getTurnosPorDia()) {
             LocalDate fecha = diaDTO.getFecha();
             LocalTime horaInicio = diaDTO.getHoraInicio();
-            LocalTime horaFin = diaDTO.getHoraFin(); // lo que elegió el usuario
+            LocalTime horaFin = diaDTO.getHoraFin(); 
 
             for (Integer servicioId : diaDTO.getServicioIds()) {
                 Servicio servicio = servicioRepository.findById(servicioId)
@@ -412,7 +412,7 @@ public class TurnoService {
                 turno.setServicio(servicio);
                 turno.setFecha(fecha);
                 turno.setHoraInicio(horaInicio);
-                turno.setHoraFin(horaFin); // tomamos la hora fin del DTO
+                turno.setHoraFin(horaFin);
 
                 turno.setEstado(EstadoTurno.PENDIENTE);
                 turno.setPagoWeb(dto.isPagoWeb());
@@ -449,7 +449,7 @@ public class TurnoService {
 
         List<Turno> turnosGuardados = turnoRepo.saveAll(todosLosTurnos);
 
-        // 🚀 Enviar el mail después de guardar
+        //Enviar el mail después de guardar
         if (!turnosGuardados.isEmpty()) {
             Usuario cliente = turnosGuardados.get(0).getCliente();
             String emailCliente = cliente.getEmail();

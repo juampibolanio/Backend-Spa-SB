@@ -2,6 +2,7 @@ package com.proyectospa.spa_app.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,6 +32,11 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/categorias/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/proveedores/**").permitAll()
+                .requestMatchers("/api/productos/**").authenticated()
+                .requestMatchers("/api/proveedores/**").authenticated()
                 .anyRequest().authenticated()
             );
 

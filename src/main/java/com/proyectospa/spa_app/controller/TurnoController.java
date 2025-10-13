@@ -133,9 +133,6 @@ public class TurnoController {
         List<TurnoDTO> turnos = turnoService.obtenerTurnosPorCliente(clienteId);
         return ResponseEntity.ok(turnos);
     }
-    // PENDIENTE ARREGLAR LOS ESTILOS DEL PANEL DE PROFESIONAL, ARREGLAR LO DEL
-    // HISTORIAL DE TURNOS, Q SE VEA TMB EL DETALLE,
-    // LA LSITA DE TURNOS
 
     @GetMapping("/cliente/{clienteId}/historial")
     public ResponseEntity<List<TurnoProfesionalDTO>> historialPorCliente(@PathVariable Integer clienteId) {
