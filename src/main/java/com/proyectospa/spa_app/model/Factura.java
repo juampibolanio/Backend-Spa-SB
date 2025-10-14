@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,7 +22,7 @@ public class Factura {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL)
-    private List<FacturaProducto> productos; 
+    private List<FacturaProducto> productos = new ArrayList<>();
 
     private BigDecimal descuento;
     private BigDecimal total;

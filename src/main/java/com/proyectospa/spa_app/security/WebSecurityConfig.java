@@ -25,26 +25,26 @@ public class WebSecurityConfig {
     private AuthTokenFilter authTokenFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/productos/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/categorias/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/proveedores/**").permitAll()
-                .requestMatchers("/api/productos/**").authenticated()
-                .requestMatchers("/api/proveedores/**").authenticated()
-                .requestMatchers("/api/facturas/**").authenticated()
-                .anyRequest().authenticated()
-            );
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(Customizer.withDefaults())
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET,"/api/productos/**").permitAll()
+            .requestMatchers(HttpMethod.GET,"/api/categorias/**").permitAll()
+            .requestMatchers(HttpMethod.GET,"/api/proveedores/**").permitAll()
+            .requestMatchers("/api/productos/**").authenticated()
+            .requestMatchers("/api/proveedores/**").authenticated()
+            .requestMatchers("/api/facturas/**").authenticated() // ← Esto requiere solo autenticación
+            .anyRequest().authenticated()
+        );
 
-        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+    return http.build();
+}
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {

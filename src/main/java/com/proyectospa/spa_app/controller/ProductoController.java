@@ -92,4 +92,29 @@ public class ProductoController {
     ) {
     return productoService.listarPorFiltros(categoriaId, nombre);
     }
+
+    @GetMapping("/stock/bajo")
+public List<ProductoDTO> productosStockBajo(@RequestParam(defaultValue = "5") Integer limite) {
+    return productoService.obtenerProductosStockBajo(limite);
+}
+
+@PutMapping("/{id}/stock")
+public ResponseEntity<ProductoDTO> actualizarStock(@PathVariable Integer id, @RequestParam Integer nuevoStock) {
+    try {
+        ProductoDTO productoActualizado = productoService.actualizarSoloStock(id, nuevoStock);
+        return ResponseEntity.ok(productoActualizado);
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.notFound().build();
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().build();
+    }
+}
+
+@GetMapping("/stock/consulta")
+public List<ProductoDTO> consultarStock(@RequestParam(required = false) Integer categoriaId,
+                                       @RequestParam(required = false) String nombre,
+                                       @RequestParam(required = false) Integer stockMin,
+                                       @RequestParam(required = false) Integer stockMax) {
+    return productoService.consultarStock(categoriaId, nombre, stockMin, stockMax);
+}
 }
