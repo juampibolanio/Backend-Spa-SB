@@ -8,8 +8,15 @@ import com.proyectospa.spa_app.repository.CategoriaRepository;
 import com.proyectospa.spa_app.repository.ProductoRepository;
 import com.proyectospa.spa_app.repository.ProveedorRepository;
 import com.proyectospa.spa_app.util.CloudinaryService;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -37,6 +44,18 @@ public class ProductoService implements IProductoService {
     @Autowired
     private Cloudinary cloudinary;
 
+    @Transactional
+public ProductoDTO actualizarSoloStock(Integer id, Integer nuevoStock) {
+    Producto producto = productoRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
+    
+    // ✅ PRESERVAR todos los demás campos, solo cambiar stock
+    producto.setStock(nuevoStock);
+    
+    Producto productoActualizado = productoRepository.save(producto);
+    return convertirADTO(productoActualizado);
+}
+
     private ProductoDTO convertirADTO(Producto producto) {
         ProductoDTO dto = new ProductoDTO();
         dto.setId(producto.getId());
@@ -46,7 +65,7 @@ public class ProductoService implements IProductoService {
         dto.setImagen(producto.getImagen());
         dto.setCategoria_id(producto.getCategoria() != null ? producto.getCategoria().getId() : null);
         dto.setProveedor_id(producto.getProveedor() != null ? producto.getProveedor().getId() : null);
-        dto.setStock(producto.getStock() != 0 ? producto.getStock() : 0);
+        dto.setStock(producto.getStock() != null ? producto.getStock() : 0); // ← Asegurar que stock se mapee
         dto.setOferta(producto.isOferta());
         dto.setVentas(producto.getVentas());
         dto.setFechaLanzamiento(producto.getFechaLanzamiento());
@@ -96,23 +115,30 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public ProductoDTO guardar(ProductoDTO productoDTO, MultipartFile imagen) {
-        Producto producto = convertirAEntidad(productoDTO);
+public ProductoDTO guardar(ProductoDTO productoDTO, MultipartFile imagen) {
+    Producto producto = convertirAEntidad(productoDTO);
 
-        try {
-            if (imagen != null && !imagen.isEmpty()) {
-                Map uploadResult = cloudinary.uploader().upload(imagen.getBytes(),
-                        ObjectUtils.asMap("folder", "productos_spa"));
-                String url = (String) uploadResult.get("secure_url");
-                producto.setImagen(url);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Error uploading image", e);
+    try {
+        if (imagen != null && !imagen.isEmpty()) {
+            // ✅ SUBIR NUEVA IMAGEN si se proporciona
+            Map uploadResult = cloudinary.uploader().upload(imagen.getBytes(),
+                    ObjectUtils.asMap("folder", "productos_spa"));
+            String url = (String) uploadResult.get("secure_url");
+            producto.setImagen(url);
+        } else if (productoDTO.getId() != null) {
+            // ✅ PRESERVAR IMAGEN EXISTENTE cuando se edita sin nueva imagen
+            Producto productoExistente = productoRepository.findById(productoDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
+            producto.setImagen(productoExistente.getImagen());
         }
-
-        Producto guardado = productoRepository.save(producto);
-        return convertirADTO(guardado);
+        // ✅ Si es nuevo producto y no hay imagen, queda null (como antes)
+    } catch (IOException e) {
+        throw new RuntimeException("Error uploading image", e);
     }
+
+    Producto guardado = productoRepository.save(producto);
+    return convertirADTO(guardado);
+}
 
     @Override
     public void eliminar(Integer id) {
@@ -154,6 +180,35 @@ public class ProductoService implements IProductoService {
     @Override
     public List<ProductoDTO> listarPorFiltros(Integer categoriaId, String nombre) {
         return productoRepository.buscarPorFiltros(categoriaId, nombre)
+                .stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    // ✅ NUEVO: Obtener productos con stock bajo
+    public List<ProductoDTO> obtenerProductosStockBajo(Integer limite) {
+        return productoRepository.findByStockLessThanEqual(limite)
+                .stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+// ✅ NUEVO: Actualizar stock de producto
+    @PutMapping("/{id}/stock")
+public ResponseEntity<ProductoDTO> actualizarStock(@PathVariable Integer id, @RequestParam Integer nuevoStock) {
+    Producto producto = productoRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado"));
+    
+    // ✅ SOLO actualizar el stock, no tocar otros campos
+    producto.setStock(nuevoStock);
+    Producto productoActualizado = productoRepository.save(producto);
+    
+    return ResponseEntity.ok(convertirADTO(productoActualizado));
+}
+
+// ✅ NUEVO: Consultar stock con filtros
+    public List<ProductoDTO> consultarStock(Integer categoriaId, String nombre, Integer stockMin, Integer stockMax) {
+        return productoRepository.buscarConFiltrosStock(categoriaId, nombre, stockMin, stockMax)
                 .stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());

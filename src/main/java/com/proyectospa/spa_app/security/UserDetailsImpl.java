@@ -29,6 +29,26 @@ public class UserDetailsImpl implements UserDetails {
         return usuario.getEmail();
     }
 
+    // Método personalizado para obtener el ID del usuario
+    public Integer getId() {
+        return usuario.getId();
+    }
+
+    // Método personalizado para obtener el DNI
+    public String getDni() {
+        return usuario.getDni();
+    }
+
+    // Método personalizado para obtener el nombre
+    public String getNombre() {
+        return usuario.getNombre();
+    }
+
+    // Método personalizado para obtener el apellido
+    public String getApellido() {
+        return usuario.getApellido();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return usuario.isActivo();

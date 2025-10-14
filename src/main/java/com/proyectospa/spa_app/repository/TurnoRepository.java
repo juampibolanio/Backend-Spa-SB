@@ -3,6 +3,8 @@ package com.proyectospa.spa_app.repository;
 import com.proyectospa.spa_app.model.EstadoTurno;
 import com.proyectospa.spa_app.model.Turno;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,4 +18,12 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
     List<Turno> findByClienteId(Integer clienteId);
     List<Turno> findByClienteIdOrderByFechaDesc(Integer clienteId);
     List<Turno> findByProfesionalIdAndClienteId(Integer profesionalId, Integer clienteId);
+
+    
+// ✅ NUEVO: Consulta COUNT optimizada para descuentos
+    @Query("SELECT COUNT(t) FROM Turno t WHERE t.cliente.id = :clienteId AND t.fecha >= :desde AND t.estado = :estado")
+    long countByClienteIdAndFechaAfterAndEstado(@Param("clienteId") Integer clienteId, 
+                                               @Param("desde") LocalDate desde,
+                                               @Param("estado") EstadoTurno estado);
 }
+
